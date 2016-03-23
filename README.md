@@ -1,0 +1,1 @@
+# ownCloud-arch-apache-mariadb-personal-setup
