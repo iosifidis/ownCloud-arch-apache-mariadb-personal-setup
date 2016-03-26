@@ -10,7 +10,8 @@ This tutorial has the following sections:
 - 3. Setup no-ip or inadyn client
 - 4. Setup MariaDB
 - 5. Setup Apache
-- 6. Setup ownCloud
+- 6. Extras
+- 7. Setup ownCloud
 
 ---
 
@@ -227,7 +228,55 @@ nano /etc/httpd/conf/httpd.conf
 ```
 
 And add
-```Include conf/extra/owncloud.conf```
+```
+Include conf/extra/owncloud.conf
+```
+
+In httpd.conf
+
+```
+nano /etc/httpd/conf/httpd.conf
+```
+
+comment the line
+```
+#LoadModule mpm_event_module modules/mod_mpm_event.so
+```
+and uncomment the line:
+```
+LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
+```
+
+To enable PHP, add these lines to httpd.conf
+
+Place this in the LoadModule list anywhere after LoadModule dir_module modules/mod_dir.so:
+```
+LoadModule php7_module modules/libphp7.so
+```
+
+Place this at the end of the Include list:
+```
+Include conf/extra/php7_module.conf
+```
+
+Now open the php.ini
+```
+nano /etc/php/php.ini
+```
+
+and enable the extensions
+```
+gd.so
+iconv.so
+xmlrpc.so
+zip.so
+bz2.so
+curl.so
+intl.so
+mcrypt.so
+pdo_mysql.so
+exif.so
+```
 
 Start and enable the serivce.
 ```
@@ -237,13 +286,13 @@ systemctl enable httpd.service
 
 ### 6. Extras
 
-Start Network Time Protocol daemon.
+* Start Network Time Protocol daemon.
 ```
 systemctl start ntpd.service
 systemctl enable ntpd.service
 ```
 
-Enable [Caching] (https://wiki.archlinux.org/index.php/OwnCloud#Caching) 
+* Enable [Caching] (https://wiki.archlinux.org/index.php/OwnCloud#Caching) 
 
 Make sure you have the package php-apcu installed. Open the file apcu.ini.
 ```
@@ -276,8 +325,66 @@ and add
 'memcache.local' => '\OC\Memcache\APCu',
 ```
 
+* [Permissions] (https://wiki.archlinux.org/index.php/OwnCloud#Setting_strong_permissions)
+
+For hardened security we recommend setting the permissions on your ownCloud directories as strictly as possible, and for proper server operations. This should be done immediately after the initial installation and before running the setup. Your HTTP user must own the config/, data/ and apps/ directories so that you can configure ownCloud, create, modify and delete your data files, and install apps via the ownCloud Web interface.
+
+Create new file:
+```
+nano oc-perms
+```
+
+and add the following
+
+```
+#!/bin/bash
+ocpath='/usr/share/webapps/owncloud'
+htuser='http'
+htgroup='http'
+rootuser='root'
+
+printf "Creating possible missing Directories\n"
+mkdir -p $ocpath/data
+mkdir -p $ocpath/assets
+
+printf "chmod Files and Directories\n"
+find ${ocpath}/ -type f -print0 | xargs -0 chmod 0640
+find ${ocpath}/ -type d -print0 | xargs -0 chmod 0750
+
+printf "chown Directories\n"
+chown -R ${rootuser}:${htgroup} ${ocpath}/
+chown -R ${htuser}:${htgroup} ${ocpath}/apps/
+chown -R ${htuser}:${htgroup} ${ocpath}/config/
+chown -R ${htuser}:${htgroup} ${ocpath}/data/
+chown -R ${htuser}:${htgroup} ${ocpath}/themes/
+chown -R ${htuser}:${htgroup} ${ocpath}/assets/
+
+chmod +x ${ocpath}/occ
+
+printf "chmod/chown .htaccess\n"
+if [ -f ${ocpath}/.htaccess ]
+ then
+  chmod 0644 ${ocpath}/.htaccess
+  chown ${rootuser}:${htgroup} ${ocpath}/.htaccess
+fi
+if [ -f ${ocpath}/data/.htaccess ]
+ then
+  chmod 0644 ${ocpath}/data/.htaccess
+  chown ${rootuser}:${htgroup} ${ocpath}/data/.htaccess
+fi
+```
+make the file executable
+```
+chmod +x oc-perms
+```
+
 ### 7. Setup ownCloud
 
+Create data directory (owncloud_data) and give the right permissions.
+```
 mkdir /mnt/owncloud_data
 chmod -R 0770 /mnt/owncloud_data
 chown -R http:http /mnt/owncloud_data
+```
+
+Open the static IP 192.168.1.100 and add the username and password for root. Add data folder (/mnt/owncloud_data) and username-password of the MariaDB database.
