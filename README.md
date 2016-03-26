@@ -179,11 +179,13 @@ Then change default password.
 
 ```
 mysqld_safe --skip-grant-tables &
+```
+
+```
 mysql_secure_installation
 ```
 
 Create database for ownCloud.
-
 ```
 mysql -u root -p
 
@@ -195,7 +197,6 @@ GRANT ALL ON owncloudb.* TO ocuser@localhost IDENTIFIED BY 'dbpass';
 exit the environement.
 
 You added the following (change those as you wish):
-
 ```
 DATABASE: owncloudb
 USER: ocuser
@@ -214,10 +215,16 @@ systemctl enable mysqld.service
 Check the [ownCloud Arch wiki] (https://wiki.archlinux.org/index.php/OwnCloud#Apache_configuration)
 
 First of all copy the owncloud.conf file.
-```cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf```
+
+```
+cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
+```
 
 Then open nano and change the file.
-```nano /etc/httpd/conf/httpd.conf```
+
+```
+nano /etc/httpd/conf/httpd.conf
+```
 
 And add
 ```Include conf/extra/owncloud.conf```
@@ -227,3 +234,50 @@ Start and enable the serivce.
 systemctl start httpd.service
 systemctl enable httpd.service
 ```
+
+### 6. Extras
+
+Start Network Time Protocol daemon.
+```
+systemctl start ntpd.service
+systemctl enable ntpd.service
+```
+
+Enable [Caching] (https://wiki.archlinux.org/index.php/OwnCloud#Caching) 
+
+Make sure you have the package php-apcu installed. Open the file apcu.ini.
+```
+nano /etc/php/conf.d/apcu.ini
+```
+
+and enable the extension
+```
+extension=apcu.so
+```
+
+Then open php.ini.
+```
+nano /etc/php/php.ini
+```
+
+And add
+```
+[apc]
+ apc.enable_cli=1
+``` 
+
+Finally, open the file config.php.
+```
+nano /etc/webapps/owncloud/config/config.php
+```
+
+and add
+```
+'memcache.local' => '\OC\Memcache\APCu',
+```
+
+### 7. Setup ownCloud
+
+mkdir /mnt/owncloud_data
+chmod -R 0770 /mnt/owncloud_data
+chown -R http:http /mnt/owncloud_data
