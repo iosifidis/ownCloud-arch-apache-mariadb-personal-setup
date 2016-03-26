@@ -177,21 +177,25 @@ After MariaDB is installed, setup the database.
 
 Then change default password.
 
-```mysqld_safe --skip-grant-tables &```
-
-```mysql_secure_installation```
+```
+mysqld_safe --skip-grant-tables &
+mysql_secure_installation
+```
 
 Create database for ownCloud.
 
-```mysql -u root -p```
+```
+mysql -u root -p
 
-```CREATE DATABASE owncloudb;```
+CREATE DATABASE owncloudb;
 
-```GRANT ALL ON owncloudb.* TO ocuser@localhost IDENTIFIED BY 'dbpass';```
+GRANT ALL ON owncloudb.* TO ocuser@localhost IDENTIFIED BY 'dbpass';
+```
 
 exit the environement.
 
 You added the following (change those as you wish):
+
 ```
 DATABASE: owncloudb
 USER: ocuser
