@@ -221,33 +221,37 @@ First of all copy the owncloud.conf file.
 cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
 ```
 
-Then open nano and change the file.
+Change the open_basedir parameter
+```
+nano /etc/httpd/conf/extra/owncloud.conf
+```
 
+and add change the following
+```
+php_admin_value open_basedir "/srv/http/:/dev/urandom:/tmp/:/usr/share/pear/:/usr/share/webapps/owncloud/:/etc/webapps/owncloud:/mnt/owncloud_data/"
+```
+
+Then open httpd.conf.
 ```
 nano /etc/httpd/conf/httpd.conf
 ```
 
-And add
+And add at the end
 ```
 Include conf/extra/owncloud.conf
 ```
 
-In httpd.conf
-
-```
-nano /etc/httpd/conf/httpd.conf
-```
-
-comment the line
+also comment the line
 ```
 #LoadModule mpm_event_module modules/mod_mpm_event.so
 ```
+
 and uncomment the line:
 ```
 LoadModule mpm_prefork_module modules/mod_mpm_prefork.so
 ```
 
-To enable PHP, add these lines to httpd.conf
+To enable PHP, add these lines
 
 Place this in the LoadModule list anywhere after LoadModule dir_module modules/mod_dir.so:
 ```
@@ -264,7 +268,12 @@ Now open the php.ini
 nano /etc/php/php.ini
 ```
 
-and enable the extensions
+first find the open_basedir and add the line 
+```
+open_basedir = /srv/http/:/dev/urandom:/usr/share/webapps/:/var/www/owncloud/apps/:/mnt/owncloud_data/
+```
+
+and then enable the extensions
 ```
 gd.so
 iconv.so
