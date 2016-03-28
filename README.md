@@ -20,14 +20,14 @@ This tutorial has the following sections:
 First of all, setup the language.
 
 ```
-$ nano /etc/locale.gen
+nano /etc/locale.gen
 ```
 And uncomment en_US.UTF-8 (I uncomment el_GR.UTF-8 for Greek).
 
 Then open the conf file.
 
 ```
-$ nano /etc/locale.conf
+nano /etc/locale.conf
 ```
 
 Copy and Paste the following.
@@ -39,14 +39,14 @@ LC_TIME="el_GR.UTF-8"
 
 Now run the following.
 ```
-$ locale-gen
+locale-gen
 ```
 ### Extra software
 
 Install the programs that we'll use next.
 
 ```
-$ pacman -S apache mariadb owncloud php-apcu php-apache php-intl php-mcrypt exiv2 ntp mc make wget fakeroot sudo packer htop ntfs-3g pkg-config
+pacman -S apache mariadb owncloud php-apcu php-apache php-intl php-mcrypt exiv2 ntp mc make wget fakeroot sudo packer htop ntfs-3g pkg-config
 ```
 
 #### AUR
@@ -71,26 +71,26 @@ and change the wheel line
 Reboot the system and give the follwing commands as user
 
 ```
-$ wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
-$ tar -xvzf package-query.tar.gz
-$ cd package-query
-$ makepkg -si
+wget https://aur.archlinux.org/cgit/aur.git/snapshot/package-query.tar.gz
+tar -xvzf package-query.tar.gz
+cd package-query
+makepkg -si
 ```
 
 You can do the same with yaourt
 
 ```
-$ wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
-$ tar -xvzf yaourt.tar.gz
-$ cd yaourt
-$ makepkg -si
+wget https://aur.archlinux.org/cgit/aur.git/snapshot/yaourt.tar.gz
+tar -xvzf yaourt.tar.gz
+cd yaourt
+makepkg -si
 ```
 
 ### 2. Setup static ip
 
 Edit the file eth0.network. Systemd-networkd uses *.network files.
 
-```$ nano /etc/systemd/network/eth0.network```
+```nano /etc/systemd/network/eth0.network```
 
 paste the following (for static IP `192.168.1.100`)
 
@@ -107,15 +107,15 @@ DNS=8.8.4.4
 
 You will then need to disable netcl. To find out what is enabled that is netctl related, run this:
 
-```$ systemctl list-unit-files```
+```systemctl list-unit-files```
 
 Once you identify all netctl related stuff. Go through and disable all netctl related stuff. You may have more to disable than just the below:
 
-```$ systemctl disable netctl@eth0.service```
+```systemctl disable netctl@eth0.service```
 
 You will then need systemd-networkd enabled:
 
-```$ systemctl enable systemd-networkd```
+```systemctl enable systemd-networkd```
 
 Login with 
 
@@ -397,3 +397,13 @@ chown -R http:http /mnt/owncloud_data
 ```
 
 Open the static IP 192.168.1.100 and add the username and password for root. Add data folder (/mnt/owncloud_data) and username-password of the MariaDB database.
+
+If you want to access your ownCloud away from home, you should add the no-ip domain to the file
+```
+nano /etc/webapps/owncloud/config.php
+````
+
+add the following
+```
+1 => 'domain.no-ip.org'
+```
