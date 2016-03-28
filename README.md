@@ -398,7 +398,7 @@ chown -R http:http /mnt/owncloud_data
 
 Open the static IP 192.168.1.100 and add the username and password for root. Add data folder (/mnt/owncloud_data) and username-password of the MariaDB database.
 
-If you want to access your ownCloud away from home, you should add the no-ip domain to the file
+If you want to access your ownCloud when you're away from home, first you should open the port 80. Add port forward to your owncloud instance. Then you should add the no-ip domain to the file
 ```
 nano /etc/webapps/owncloud/config.php
 ````
